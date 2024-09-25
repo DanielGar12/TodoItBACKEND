@@ -24,9 +24,16 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
 });
+const todoSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    description: { type: String },
+    dueDate: { type: Date, required: true}
+});
+
 
 
 const User = mongoose.model('User', userSchema);
+const Todo = mongoose.model('Todo', todoSchema);
 
 
 app.post('/users', async (req, res) => {
@@ -67,6 +74,25 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/todos', async (req, res) => {
+    const {title, description, dueDate} = req.body;
+
+    try{
+        const newTodo = new Todo({
+            title,
+            description,
+            dueDate,
+        });
+
+        await newTodo.save();
+        res.status(201).json({ message: 'Todo created successfully', todo: newTodo });
+    }
+    catch(error){
+        console.error('Error creating todo:', error);
+        res.status(500).json({ error: 'Failed to create todo' });
+    }
+});
+
 
 
 
@@ -76,6 +102,15 @@ app.get('/users', async (req, res) => {
         res.status(200).send(users);
     } catch (error) {
         res.status(500).send({ error: 'Failed to fetch users' });
+    }
+});
+app.get('/todos', async (req, res) => {
+    try {
+        const todos = await Todo.find();
+        res.status(200).json(todos); // Make sure this sends back JSON
+    } catch (error) {
+        console.error('Error fetching todos:', error);
+        res.status(500).json({ error: 'Failed to fetch todos' });
     }
 });
 
