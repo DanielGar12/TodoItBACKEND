@@ -77,14 +77,15 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/todos', async (req, res) => {
-    const { title, description, dueDate, userId } = req.body;
+    const { title, description, dueDate, user } = req.body; 
+    console.log("Received Todo Data:", req.body);
 
     try {
         const newTodo = new Todo({
             title,
             description,
             dueDate,
-            user: userId,  
+            user, 
         });
 
         await newTodo.save();
@@ -99,6 +100,8 @@ app.post('/todos', async (req, res) => {
 
 
 
+
+
 app.get('/users', async (req, res) => {
     try {
         const users = await User.find();
@@ -108,14 +111,16 @@ app.get('/users', async (req, res) => {
     }
 });
 app.get('/todos', async (req, res) => {
+    const userId = req.query.user; // Use 'user' instead of 'userId'
     try {
-        const todos = await Todo.find();
-        res.status(200).json(todos); // Make sure this sends back JSON
+        const todos = await Todo.find({ user: userId }); // Query todos by user
+        res.json(todos);
     } catch (error) {
-        console.error('Error fetching todos:', error);
-        res.status(500).json({ error: 'Failed to fetch todos' });
+        res.status(500).send('Server Error');
     }
 });
+
+
 
 
 const PORT = process.env.PORT || 3000;
