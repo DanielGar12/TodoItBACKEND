@@ -27,8 +27,10 @@ const userSchema = new mongoose.Schema({
 const todoSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String },
-    dueDate: { type: Date, required: true}
+    dueDate: { type: String},
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },  // Reference to the user
 });
+
 
 
 
@@ -75,23 +77,24 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/todos', async (req, res) => {
-    const {title, description, dueDate} = req.body;
+    const { title, description, dueDate, userId } = req.body;
 
-    try{
+    try {
         const newTodo = new Todo({
             title,
             description,
             dueDate,
+            user: userId,  
         });
 
         await newTodo.save();
         res.status(201).json({ message: 'Todo created successfully', todo: newTodo });
-    }
-    catch(error){
+    } catch (error) {
         console.error('Error creating todo:', error);
         res.status(500).json({ error: 'Failed to create todo' });
     }
 });
+
 
 
 
