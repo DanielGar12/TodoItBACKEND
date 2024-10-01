@@ -203,9 +203,9 @@ app.get('/users', async (req, res) => {
     }
 });
 app.get('/todos', async (req, res) => {
-    const userId = req.query.user; // Use 'user' instead of 'userId'
+    const userId = req.query.user; 
     try {
-        const todos = await Todo.find({ user: userId }); // Query todos by user
+        const todos = await Todo.find({ user: userId }); 
         res.json(todos);
     } catch (error) {
         res.status(500).send('Server Error');
